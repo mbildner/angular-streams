@@ -38,6 +38,20 @@ angular.module('mhb.stream')
       return resultStream;
 
     };
+
+    this.reduce = function(callback, accumulator){
+      var prev = accumulator;
+      var reduceDeferred = $q.defer();
+
+      this.each(function(event){
+        prev = callback(prev, event);
+        reduceDeferred.notify(prev);
+      });
+
+      return new Stream(reduceDeferred.promise);
+
+    };
+
   }
   return function (promise) { return new Stream(promise); };
 

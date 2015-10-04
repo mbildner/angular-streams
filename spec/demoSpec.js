@@ -145,4 +145,29 @@ describe('angular streaming service', function(){
     });
   });
 
+  describe('#reduce', function(){
+    it('emits an accumulation of events', function(){
+      var deferred = $q.defer();
+
+      var stream = StreamFactory(deferred.promise);
+
+      var value = '';
+
+      stream
+        .reduce(function(accum, event){
+          return accum + ' and also ' + event;
+        }, 'reduce accumulator')
+        .each(function(event){
+          value = event;
+        });
+
+      deferred.notify('first');
+      deferred.notify('second');
+      deferred.notify('third');
+
+      $rootScope.$digest();
+      expect(value).toBe('reduce accumulator and also first and also second and also third');
+    });
+  });
+
 });
