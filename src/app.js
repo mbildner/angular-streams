@@ -21,13 +21,17 @@
         return self;
       };
 
-      this.map = function(transformCallback){
+      this.map = function(transform){
         var mappedDeferred = $q.defer();
 
         var mappedStream = new Stream(mappedDeferred.promise);
 
+        var transformFunc = angular.isFunction(transform)
+          ? transform
+          : function () { return transform; };
+
         self.each(function(event){
-          mappedDeferred.notify(transformCallback(event));
+          mappedDeferred.notify(transformFunc(event));
         });
 
         return mappedStream;

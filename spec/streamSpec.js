@@ -34,6 +34,26 @@ describe('angular streaming service', function(){
   });
 
   describe('#map', function(){
+    it('can map events to a value', function(){
+      var deferred = $q.defer();
+      var stream = StreamFactory(deferred.promise);
+
+      var streamOfPotatoes = stream.map('potato');
+
+      var potatoHolder = [];
+      streamOfPotatoes.each(function(p){
+        potatoHolder.push(p);
+      });
+
+      deferred.notify('first');
+      deferred.notify('second');
+      deferred.notify('third');
+
+      $rootScope.$digest();
+
+      expect(potatoHolder).toEqual(['potato', 'potato', 'potato']);
+    });
+
     it('does not mutate the original stream', function(){
       var deferred = $q.defer();
       var stream = StreamFactory(deferred.promise);
