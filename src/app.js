@@ -4,16 +4,15 @@
 
   angular.module('mhb.stream')
   .factory('StreamFactory', ['$q', function($q){
-    function Stream(promise, mapFunc){
+    function Stream(promise){
       var self = this;
       var callbackQueue = [];
-      mapFunc = (mapFunc || angular.identity);
 
       promise.then(null, null, processCallbackQueue);
 
       function processCallbackQueue(event){
         angular.forEach(callbackQueue, function(cb){
-          cb(mapFunc(event));
+          cb(event);
         });
       }
 
@@ -23,7 +22,14 @@
       };
 
       this.map = function(transformCallback){
-        var mappedStream = new Stream(promise, transformCallback);
+        var mappedDeferred = $q.defer();
+
+        var mappedStream = new Stream(mappedDeferred.promise);
+
+        self.each(function(event){
+          mappedDeferred.notify(transformCallback(event));
+        });
+
         return mappedStream;
       };
 
