@@ -52,6 +52,20 @@
 
       };
 
+      this.filter = function(test){
+        var resultDeferred = $q.defer();
+
+        var resultStream = new Stream(resultDeferred.promise);
+
+        self.each(function(event){
+          if (test(event)){
+            resultDeferred.notify(event);
+          }
+        });
+
+        return resultStream;
+      };
+
     }
     return function (promise) { return new Stream(promise); };
   }]);

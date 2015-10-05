@@ -170,4 +170,33 @@ describe('angular streaming service', function(){
     });
   });
 
+  describe('#filter', function(){
+    it('re-emits events that pass a test', function(){
+      var deferred = $q.defer();
+
+      var stream = StreamFactory(deferred.promise);
+
+      var value = [];
+
+      stream
+        .filter(function(event){
+          return event % 2;
+        })
+        .each(function(event){
+          value.push(event);
+        });
+
+      deferred.notify(1);
+      deferred.notify(2);
+      deferred.notify(3);
+      deferred.notify(4);
+      deferred.notify(5);
+      deferred.notify(6);
+      deferred.notify(7);
+
+      $rootScope.$digest();
+
+      expect(value).toEqual([1, 3, 5, 7]);
+    });
+  });
 });
